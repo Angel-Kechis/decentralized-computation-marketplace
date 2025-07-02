@@ -264,3 +264,81 @@
     metadata: (string-utf8 200)
   }
 )
+
+;; Template counter
+(define-data-var template-id-counter uint u0)
+
+;; Dispute data
+(define-map disputes
+  {task-id: uint}
+  {
+    initiator: principal,
+    respondent: principal,
+    evidence-hash: (buff 32),
+    arbiter: (optional principal),
+    status: uint,
+    created-at: uint,
+    resolution: (optional {
+      winner: principal,
+      resolution-note: (string-utf8 200),
+      bounty-distribution: (list 5 {recipient: principal, amount: uint})
+    })
+  }
+)
+
+;; Arbiters registry
+(define-map arbiters
+  principal
+  {
+    cases-handled: uint,
+    success-rate: uint,
+    specialty: (string-utf8 50),
+    active: bool,
+    stake: uint
+  }
+)
+
+;; Map to track task escrow funds
+(define-map task-escrow
+  {task-id: uint}
+  {
+    total-funds: uint,
+    release-conditions: (list 5 {
+      milestone: (string-utf8 100),
+      percentage: uint,
+      released: bool,
+      release-approved-by: (optional principal)
+    }),
+    deposit-history: (list 10 {
+      contributor: principal,
+      amount: uint,
+      timestamp: uint
+    })
+  }
+)
+
+;; Map to track collaboration on tasks
+(define-map task-collaboration
+  {task-id: uint}
+  {
+    communication-logs: (list 50 {
+      sender: principal,
+      timestamp: uint,
+      message-hash: (buff 32),
+      encrypted: bool
+    }),
+    shared-resources: (list 20 {
+      name: (string-utf8 100),
+      resource-hash: (buff 32),
+      uploader: principal,
+      upload-timestamp: uint,
+      access-control: (list 10 principal)
+    }),
+    revision-history: (list 10 {
+      version: uint,
+      changes: (string-utf8 200),
+      author: principal,
+      timestamp: uint
+    })
+  }
+)
