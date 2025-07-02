@@ -180,3 +180,87 @@
 (define-read-only (get-worker-skills (worker principal))
   (map-get? worker-skills worker)
 )
+
+(define-constant ERR-MAX-WORKERS-REACHED (err u108))
+(define-constant ERR-ALREADY-ASSIGNED (err u109))
+(define-constant ERR-NOT-ASSIGNED-WORKER (err u110))
+(define-constant ERR-PAYMENT-FAILED (err u111))
+(define-constant ERR-DEADLINE-PASSED (err u112))
+(define-constant ERR-EMPTY-DESCRIPTION (err u113))
+
+(define-constant ERR-INVALID-RATING (err u114))
+(define-constant ERR-ALREADY-RATED (err u115))
+(define-constant ERR-INACTIVE-MARKET (err u116))
+(define-constant ERR-INVALID-ESCROW (err u117))
+(define-constant ERR-BLACKLISTED (err u118))
+(define-constant ERR-TASK-LIMIT-EXCEEDED (err u119))
+(define-constant ERR-NFT-REQUIRED (err u120))
+
+;; New task states
+(define-constant TASK-IN-ARBITRATION u8)
+(define-constant TASK-EXPIRED u9)
+
+;; Rating system
+(define-map worker-ratings
+  {task-id: uint, rater: principal, ratee: principal}
+  {
+    rating: uint,
+    comment: (string-utf8 200),
+    timestamp: uint
+  }
+)
+
+;; Worker blacklist
+(define-map blacklisted-workers
+  principal
+  {
+    blacklisted-at: uint,
+    reason: (string-utf8 200),
+    blacklisted-by: principal
+  }
+)
+
+;; Task categories and subcategories
+(define-map task-categories
+  (string-utf8 50)
+  {
+    subcategories: (list 10 (string-utf8 50)),
+    active: bool,
+    minimum-reputation: uint
+  }
+)
+
+;; Market status
+(define-data-var market-active bool true)
+
+;; User dashboard stats
+(define-map user-stats
+  principal
+  {
+    total-earned: uint,
+    total-spent: uint,
+    tasks-created: uint,
+    tasks-completed: uint,
+    avg-task-complexity: uint,
+    favorite-categories: (list 3 (string-utf8 50)),
+    last-login: uint,
+    membership-tier: uint
+  }
+)
+
+;; Task templates
+(define-map task-templates
+  {template-id: uint}
+  {
+    name: (string-utf8 50),
+    description: (string-utf8 200),
+    default-bounty: uint,
+    default-stake: uint,
+    default-complexity: uint,
+    category: (string-utf8 50),
+    creator: principal,
+    is-public: bool,
+    created-at: uint,
+    metadata: (string-utf8 200)
+  }
+)
